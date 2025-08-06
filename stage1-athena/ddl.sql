@@ -1,0 +1,35 @@
+-- stage1-athena/ddl.sql
+
+CREATE DATABASE IF NOT EXISTS healthcare;
+
+CREATE EXTERNAL TABLE IF NOT EXISTS healthcare.facilities (
+  facility_id string,
+  facility_name string,
+  employee_count int,
+  services array<string>,
+  location struct<
+    address:string,
+    city:string,
+    state:string,
+    zip:string
+  >,
+  labs array<
+    struct<
+      lab_name:string,
+      certifications:array<string>
+    >
+  >,
+  accreditation array<
+    struct<
+      accreditation_body:string,
+      accreditation_id:string,
+      valid_until:string
+    >
+  >
+)
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES (
+  'ignore.malformed.json' = 'true'
+)
+LOCATION 's3://'"rafay-aws-pipeline"'/raw/'
+TBLPROPERTIES ('has_encrypted_data'='false');
