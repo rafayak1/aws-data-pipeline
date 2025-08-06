@@ -22,7 +22,21 @@ def list_raw_objects(bucket, prefix):
     paginator = s3.get_paginator('list_objects_v2')
     for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
         for obj in page.get('Contents', []):
-            yield obj['Key']
+            key = obj['Key']
+            # Skip the "directory" marker
+            if key.endswith('/') or key == prefix:
+                continue
+            yield key
+
+def list_raw_objects(bucket, prefix):
+    paginator = s3.get_paginator('list_objects_v2')
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get('Contents', []):
+            key = obj['Key']
+            # Only process actual JSON files
+            if not key.lower().endswith('.json'):
+                continue
+            yield key
 
 def load_json(bucket, key):
     resp = s3.get_object(Bucket=bucket, Key=key)
