@@ -6,7 +6,11 @@
       "Effect": "Allow",
       "Action": [
         "glue:GetDatabase",
-        "glue:GetTable"
+        "glue:GetDatabases",
+        "glue:GetTable",
+        "glue:GetTables",
+        "glue:GetPartition",
+        "glue:GetPartitions"
       ],
       "Resource": [
         "arn:aws:glue:us-east-1:388309268402:catalog",
