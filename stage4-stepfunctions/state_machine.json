@@ -1,5 +1,5 @@
 {
-  "Comment": "Orchestrate Athena extraction",
+  "Comment": "Orchestrate Athena extraction with failure handling",
   "StartAt": "StartExtraction",
   "States": {
     "StartExtraction": {
@@ -36,10 +36,27 @@
           "Variable": "$.QueryStatus.QueryExecution.Status.State",
           "StringEquals": "SUCCEEDED",
           "Next": "Done"
+        },
+        {
+          "Variable": "$.QueryStatus.QueryExecution.Status.State",
+          "StringEquals": "FAILED",
+          "Next": "FailState"
+        },
+        {
+          "Variable": "$.QueryStatus.QueryExecution.Status.State",
+          "StringEquals": "CANCELLED",
+          "Next": "FailState"
         }
       ],
       "Default": "WaitForQuery"
     },
-    "Done": { "Type": "Succeed" }
+    "FailState": {
+      "Type": "Fail",
+      "Error": "AthenaQueryFailed",
+      "Cause": "The Athena query execution failed or was cancelled."
+    },
+    "Done": {
+      "Type": "Succeed"
+    }
   }
 }
