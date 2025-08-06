@@ -1,0 +1,29 @@
+{
+  "DatabaseName": "healthcare",
+  "TableInput": {
+    "Name": "facilities",
+    "Description": "Facility metadata from JSON files",
+    "StorageDescriptor": {
+      "Columns": [
+        { "Name": "facility_id",    "Type": "string" },
+        { "Name": "facility_name",  "Type": "string" },
+        { "Name": "employee_count", "Type": "int"    },
+        { "Name": "services",       "Type": "array<string>" },
+        { "Name": "location",       "Type": "struct<address:string,city:string,state:string,zip:string>" },
+        { "Name": "labs",           "Type": "array<struct<lab_name:string,certifications:array<string>>>" },
+        { "Name": "accreditation",  "Type": "array<struct<accreditation_body:string,accreditation_id:string,valid_until:string>>>" }
+      ],
+      "Location": "s3://rafay-aws-pipeline/raw/",
+      "InputFormat": "org.apache.hadoop.mapred.TextInputFormat",
+      "OutputFormat": "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+      "SerdeInfo": {
+        "SerializationLibrary": "org.openx.data.jsonserde.JsonSerDe",
+        "Parameters": { "ignore.malformed.json": "true" }
+      }
+    },
+    "TableType": "EXTERNAL_TABLE",
+    "Parameters": {
+      "has_encrypted_data": "false"
+    }
+  }
+}
