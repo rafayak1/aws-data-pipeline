@@ -1,0 +1,52 @@
+{
+  "Comment": "Orchestrate filtering and extraction",
+  "StartAt": "FilterExpiring",
+  "States": {
+    "FilterExpiring": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:388309268402:function:FilterExpiringFunction",
+      "Next": "StartExtraction"
+    },
+    "StartExtraction": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:athena:startQueryExecution",
+      "Parameters": {
+        "QueryString.$": "$.query",
+        "WorkGroup": "pipeline-wg",
+        "ResultConfiguration": {
+          "OutputLocation": "s3://rafay-aws-pipeline/athena_results/"
+        }
+      },
+      "ResultPath": "$.QueryInfo",
+      "Next": "WaitForQuery"
+    },
+    "WaitForQuery": {
+      "Type": "Wait",
+      "Seconds": 5,
+      "Next": "GetQueryStatus"
+    },
+    "GetQueryStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:athena:getQueryExecution",
+      "Parameters": {
+        "QueryExecutionId.$": "$.QueryInfo.QueryExecutionId"
+      },
+      "ResultPath": "$.QueryStatus",
+      "Next": "CheckIfDone"
+    },
+    "CheckIfDone": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.QueryStatus.QueryExecution.Status.State",
+          "StringEquals": "SUCCEEDED",
+          "Next": "Done"
+        }
+      ],
+      "Default": "WaitForQuery"
+    },
+    "Done": {
+      "Type": "Succeed"
+    }
+  }
+}
