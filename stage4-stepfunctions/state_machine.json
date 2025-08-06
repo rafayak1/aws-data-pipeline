@@ -1,12 +1,7 @@
 {
-  "Comment": "Orchestrate filtering and extraction",
-  "StartAt": "FilterExpiring",
+  "Comment": "Orchestrate Athena extraction",
+  "StartAt": "StartExtraction",
   "States": {
-    "FilterExpiring": {
-      "Type": "Task",
-      "Resource": "arn:aws:lambda:us-east-1:388309268402:function:FilterExpiringFunction",
-      "Next": "StartExtraction"
-    },
     "StartExtraction": {
       "Type": "Task",
       "Resource": "arn:aws:states:::aws-sdk:athena:startQueryExecution",
@@ -45,8 +40,6 @@
       ],
       "Default": "WaitForQuery"
     },
-    "Done": {
-      "Type": "Succeed"
-    }
+    "Done": { "Type": "Succeed" }
   }
 }
