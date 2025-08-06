@@ -1,0 +1,53 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "GluePermissions",
+      "Effect": "Allow",
+      "Action": [
+        "glue:GetDatabase",
+        "glue:GetTable"
+      ],
+      "Resource": [
+        "arn:aws:glue:us-east-1:388309268402:catalog",
+        "arn:aws:glue:us-east-1:388309268402:database/healthcare",
+        "arn:aws:glue:us-east-1:388309268402:table/healthcare/*"
+      ]
+    },
+    {
+      "Sid": "BucketPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::rafay-aws-pipeline"
+    },
+    {
+      "Sid": "PutResults",
+      "Effect": "Allow",
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::rafay-aws-pipeline/athena_results/*"
+    },
+    {
+      "Sid": "AthenaActions",
+      "Effect": "Allow",
+      "Action": [
+        "athena:StartQueryExecution",
+        "athena:GetQueryExecution",
+        "athena:GetQueryResults"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "Logging",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:us-east-1:388309268402:log-group:/aws/states/*"
+    }
+  ]
+}
